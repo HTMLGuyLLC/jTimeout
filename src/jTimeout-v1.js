@@ -1,9 +1,12 @@
-/*
-	jTimeout - v1
-	Versatility Werks (http://flwebsites.biz)
-	M.I.T License
- */
-
+/* 
+	*
+	*
+	jTimeout v.1
+	Made with love by Versatility Werks (http://flwebsites.biz)
+	MIT Licensed
+	*
+	*
+*/
 ;(function($) {
 
 	$.jTimeout = function(options) {
