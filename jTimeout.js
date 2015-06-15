@@ -52,20 +52,23 @@
 
 		jTimeout.stopFlashing = function(){
 
-			if( jTimeout.flashingTitle )
+			if( jTimeout.options.flashTitle ) 
 			{
-				window.clearInterval( jTimeout.flashingTitle );
+				if( jTimeout.flashingTitle )
+				{
+					window.clearInterval( jTimeout.flashingTitle );
+				}
+
+				jTimeout.flashingTitle = false;
+
+				document.title = jTimeout.options.originalTitle;
 			}
-
-			jTimeout.flashingTitle = false;
-
-			document.title = jTimeout.options.originalTitle;
 
 		};
 
 		jTimeout.startFlashing = function(){
 
-			if( !jTimeout.flashingTitle )
+			if( !jTimeout.flashingTitle && jTimeout.options.flashTitle )
 			{
 
 				jTimeout.flashingTitle = window.setInterval(function(){
@@ -113,6 +116,8 @@
 			/* If another tab updated it more than 5 seconds ago, this tab will take control */
 			if( whichTabLast < new Date('-5 seconds') )
 			{
+				seconds = seconds - 5; //if more than 5 seconds have gone by, then we probably need to subtract more than 5 seconds. This is just a good approx.
+
 				whichTab = jTimeout.options.tabID;
 
 				jTimeout.setTab( whichTab );
@@ -147,6 +152,7 @@
 						'title': 'Oh No!',
 						'content': '<b>Your session will timeout in '+jTimeout.options.secondsPrior+' seconds!</b>',
 						'theme': 'red',
+						'closeBtn': false,
 						'btns': {
 							'text': 'Extend my Session',
 							'theme': 'blue',
