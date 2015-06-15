@@ -276,7 +276,7 @@
 		'logoutUrl': '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
 		'loginUrl': '/login', //URL to send a customer when they want to log back in
 
-		'secondsPrior': 60, //how many seconds before timing out to run the next callback (onGettingClose)
+		'secondsPrior': 60, //how many seconds before timing out to run the next callback (onPriorCallback)
 		'onPriorCallback': false, //override the popup that shows when getting within x seconds of timing out
 
 		'onClickExtend': false, //override the click to extend button callback
