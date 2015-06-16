@@ -156,33 +156,48 @@
 						'content': '<b>Your session will timeout in '+jTimeout.options.secondsPrior+' seconds!</b>',
 						'theme': 'red',
 						'closeBtn': false,
-						'btns': {
-							'text': 'Extend my Session',
-							'theme': 'blue',
-							'onClick': function(e, btn){
-
-								e.preventDefault();
-
-								if( !jTimeout.options.onClickExtend )
+						'btns': 
+							[
 								{
-									/* Request dashboard to increase session */
-									$.get( jTimeout.options.extendUrl );
-
-									jTimeout.setTimer( jTimeout.options.timeoutAfter );
-									jTimeout.setTab( jTimeout.options.tabID );
-									jTimeout.setTabLast();
-								}
-								else
+									'text': 'Extend my Session',
+									'theme': 'blue',
+									'onClick': function(e, btn){
+	
+										e.preventDefault();
+		
+										if( !jTimeout.options.onClickExtend )
+										{
+											/* Request dashboard to increase session */
+											$.get( jTimeout.options.extendUrl );
+		
+											jTimeout.setTimer( jTimeout.options.timeoutAfter );
+											jTimeout.setTab( jTimeout.options.tabID );
+											jTimeout.setTabLast();
+										}
+										else
+										{
+											jTimeout.options.onClickExtend(jTimeout);
+										}
+		
+										btn.parents('.jAlert').closeAlert();
+		
+										return false;
+									}
+	
+								},
 								{
-									jTimeout.options.onClickExtend(jTimeout);
+									'text': 'Logout Now',
+									'onClick': function(e, btn){
+										
+										e.preventDefault();
+										
+										window.location.href = jTimeout.options.logoutUrl;
+										
+										return false;
+										
+									}
 								}
-
-								btn.parents('.jAlert').closeAlert();
-
-								return false;
-
-							}
-						}
+							]
 					});
 				}
 				else
