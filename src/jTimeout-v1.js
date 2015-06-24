@@ -132,8 +132,8 @@
 				whichTab = jTimeout.getTab(),
 				whichTabLast = jTimeout.getTabLast();
 
-			/* If another tab updated it more than 5 seconds ago, this tab will take control */
-			if( whichTabLast < new Date('-5 seconds') )
+			/* If another tab updated it more than 2 seconds ago, this tab will take control */
+			if( whichTabLast < new Date('-2 seconds') )
 			{
 				seconds = seconds - Math.abs(((new Date()).getTime() - whichTabLast.getTime())/1000); //remove difference
 
