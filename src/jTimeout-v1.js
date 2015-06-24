@@ -180,33 +180,47 @@
 						'onOpen': function(alert){
 								jTimeout.startPriorCountdown( alert.find('.jTimeout_Countdown') );
 							},
-						'btns': {
-							'text': 'Extend my Session',
-							'theme': 'blue',
-							'onClick': function(e, btn){
+						'btns': 
+						[
+							{
+								'text': 'Extend my Session',
+								'theme': 'blue',
+								'onClick': function(e, btn){
 
-								e.preventDefault();
+									e.preventDefault();
 
-								if( !jTimeout.options.onClickExtend )
-								{
-									/* Request dashboard to increase session */
-									$.get( jTimeout.options.extendUrl );
+									if( !jTimeout.options.onClickExtend )
+									{
+										/* Request dashboard to increase session */
+										$.get( jTimeout.options.extendUrl );
 
-									jTimeout.setTimer( jTimeout.options.timeoutAfter );
-									jTimeout.setTab( jTimeout.options.tabID );
-									jTimeout.setTabLast();
+										jTimeout.setTimer( jTimeout.options.timeoutAfter );
+										jTimeout.setTab( jTimeout.options.tabID );
+										jTimeout.setTabLast();
+									}
+									else
+									{
+										jTimeout.options.onClickExtend(jTimeout);
+									}
+
+									btn.parents('.jAlert').closeAlert();
+
+									return false;
 								}
-								else
-								{
-									jTimeout.options.onClickExtend(jTimeout);
+							},
+							{
+								'text': 'Logout Now',
+								'onClick': function(e, btn){
+									
+									e.preventDefault();
+									
+									window.location.href = jTimeout.options.logoutUrl;
+									
+									return false;
+									
 								}
-
-								btn.parents('.jAlert').closeAlert();
-
-								return false;
-
 							}
-						}
+						]
 					});
 				}
 				else
