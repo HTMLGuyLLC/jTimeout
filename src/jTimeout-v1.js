@@ -34,6 +34,7 @@
 		};
 
 		jTimeout.setTimer = function(curTime){
+
 			return window.localStorage.setItem('timeoutCountdown', curTime);
 		};
 
@@ -51,6 +52,15 @@
 
 		jTimeout.setTabLast = function(){
 			return window.localStorage.setItem('timeoutTabLast', new Date());
+		};
+
+		jTimeout.stopPriorCountdown = function(){
+
+			if( jTimeout.priorCountDown )
+			{
+				jTimeout.priorCountDown = false;
+			}
+
 		};
 
 		jTimeout.stopFlashing = function(){
@@ -91,6 +101,12 @@
 
 		};
 
+		jTimeout.startPriorCountdown = function(elem){
+
+			jTimeout.priorCountDown = elem;
+
+		};
+
 		jTimeout.hideAlerts = function(){
 
 			var timedOutAlert = $('#jTimeoutAlert'),
@@ -119,11 +135,16 @@
 			/* If another tab updated it more than 5 seconds ago, this tab will take control */
 			if( whichTabLast < new Date('-5 seconds') )
 			{
-				seconds = seconds - 5; //if more than 5 seconds have gone by, then we probably need to subtract more than 5 seconds. This is just a good approx.
+				seconds = seconds - Math.abs(((new Date()).getTime() - whichTabLast.getTime())/1000); //remove difference
 
 				whichTab = jTimeout.options.tabID;
 
 				jTimeout.setTab( whichTab );
+			}
+
+			if( jTimeout.priorCountDown )
+			{
+				jTimeout.priorCountDown.text(seconds);
 			}
 
 			/* If the last tab to interact is the same as this one */
@@ -153,9 +174,12 @@
 					$.jAlert({
 						'id': 'jTimeoutAlert',
 						'title': 'Oh No!',
-						'content': '<b>Your session will timeout in '+jTimeout.options.secondsPrior+' seconds!</b>',
+						'content': '<b>Your session will timeout in <span class="jTimeout_Countdown">'+seconds+'</span> seconds!</b>',
 						'theme': 'red',
 						'closeBtn': false,
+						'onOpen': function(alert){
+								jTimeout.startPriorCountdown( alert.find('.jTimeout_Countdown') );
+							},
 						'btns': {
 							'text': 'Extend my Session',
 							'theme': 'blue',
@@ -233,6 +257,8 @@
 
 				jTimeout.stopFlashing();
 
+				jTimeout.stopPriorCountdown();
+
 				jTimeout.hideAlerts();
 
 				$timeoutWarned = false;
@@ -270,7 +296,7 @@
 
 		'tabID': false, //each tab needs a unique ID so you can tell which one last updated the timer - false makes it autogenerate one
 		'timeoutAfter': 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
-		'heartbeat': 2, //how many seconds in between checking and updating the timer - 2 seconds is a good amount
+		'heartbeat': 1, //how many seconds in between checking and updating the timer
 
 		'extendUrl': '/dashboard', //URL to request in order to extend the session.
 		'logoutUrl': '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.

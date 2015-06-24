@@ -20,7 +20,7 @@
     <script src='https://code.jquery.com/jquery-2.0.3.min.js'></script>
 	<script src='https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
 	<script src='http://flwebsites.biz/jAlert/src/jAlert-v3.js'></script>
-	<script src='src/jTimeout-v1.min.js'></script>
+	<script src='src/jTimeout-v1.js'></script>
   </head>
 
   <body>
@@ -105,7 +105,7 @@ $(function(){
 
 	'tabID': false, //each tab needs a unique ID so you can tell which one last updated the timer - false makes it autogenerate one
 	'timeoutAfter': 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
-	'heartbeat': 2, //how many seconds in between checking and updating the timer - 2 seconds is a good amount
+	'heartbeat': 1, //how many seconds in between checking and updating the timer - warning: this will effect the speed of the countdown prior
 
 	'extendUrl': '/dashboard', //URL to request in order to extend the session.
 	'logoutUrl': '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
