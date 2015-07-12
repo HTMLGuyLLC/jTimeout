@@ -28,7 +28,7 @@
     <div class='row'>
     	<div class='col-sm-12'>
     		<h1>jTimeout v.1.5 (only 4kb!)</h1>
-	  		<h4>This cross-tab jQuery plugin keeps track of time and let's a user know before their session times out so they can extend it. Then tells them when it has expired so they can login again.</h4>
+			This cross-tab jQuery plugin keeps track of time and lets a user know before their session times out so they can extend it. Then tells them when it has expired so they can login again. The coolest part about jTimeout is that if a user loads 4 tabs with jTimeout on them, only 1 will control the countdown. If a tab is closed, another one will take over counting down. If another tab is opened, the timer will be reset (since the session timeout was reset). The only time the timer isn't reset but could/should be, is when an AJAX call is made. You'll have to just call "$.jTimeout.reset(1440);" each time an AJAX call is made to reset the timer. Passing the number of seconds is optional, it'll default to the $.jTimeout.defaults.timeoutAfter param. If you don't implement this reset, no big deal. The session doesn't actually have to be expired for this plugin to work. It'll manually call the logout page on timeout.<br><br>
 	  	</div>
 	</div>
 	<div class='row'>
@@ -53,7 +53,7 @@
 		  			
 		  			$('.0Left').on('click', function(e){
 			  			e.preventDefault();
-			  			$('#curTime').val('0').trigger('change');
+			  			$.jTimeout.reset();
 		  			});
 
 	  				$.jTimeout({
@@ -73,12 +73,6 @@
 	  					timer = window.setInterval(function(){
 	  						$('#curTime').val( window.localStorage.timeoutCountdown );
 	  					}, 1000);
-	  				},
-	  				clearTimer = function(){
-	  					if( timer )
-	  					{
-	  						window.clearInterval(timer);
-	  					}
 	  				};
 
 	  				$('#curTime').on('change', function(){
@@ -90,6 +84,9 @@
 
 	  			});
 	  		</script>
+	  		<br><br>
+	  		<a href='https://github.com/VersatilityWerks/jTimeout' class='btn btn-primary btn-lg'>View on Github</a>
+	  		<a href='https://github.com/VersatilityWerks/jTimeout/archive/master.zip' class='btn btn-success btn-lg'>Download</a>
 	  	</div>
   		<div class='col-sm-12 col-md-6'>
 	  		How to use (dead simple):<br>
@@ -133,6 +130,9 @@ $(function(){
 	'onTimeout': false //override the timeout function if you'd like
 	}
    );
+   
+   $.jTimeout.reset(); //will reset the timer to timeoutAfter above
+   $.jTimeout.reset(1000); //will set the timer to 1000 seconds
 });</pre>
 		</div>
 	</div>

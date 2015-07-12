@@ -300,6 +300,12 @@
 		return this;
 
 	};
+	
+	$.jTimeout.reset = function(seconds)
+	{
+		seconds = typeof seconds != 'undefined' ? seconds : $.jTimeout.defaults.timeoutAfter; //default to default timeoutAfter
+		window.localStorage.timeoutCountdown = seconds; //set timeout countdown
+	}
 
 	$.jTimeout.defaults = {
 
