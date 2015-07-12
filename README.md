@@ -86,7 +86,8 @@ $.jTimeout({
   onPriorCallback: function(jTimeout){
     //tell them they will be timing out soon!
     //to get the current time:
-    jTimeout.getTimer();
+    var secondsLeft = jTimeout.getTimer();
+    console.log('You will be timed out in: '+secondsLeft'+ seconds');
   }
 });
 ```
