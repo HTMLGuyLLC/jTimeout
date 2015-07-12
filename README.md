@@ -82,6 +82,7 @@ jTimeout already works out of the box with jAlert, but can fairly easily configu
 $.jTimeout({
   onTimeout: function(jTimeout){
     //do whatever you want
+    console.log('You have been timed out');
   },
   onPriorCallback: function(jTimeout){
     //tell them they will be timing out soon!
