@@ -20,14 +20,14 @@
     <script src='https://code.jquery.com/jquery-2.0.3.min.js'></script>
 	<script src='https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
 	<script src='http://flwebsites.biz/jAlert/src/jAlert-v3.js'></script>
-	<script src='src/jTimeout-v1.5.js'></script>
+	<script src='src/jTimeout-v1.6.js'></script>
   </head>
 
   <body>
   <div class='container'>
     <div class='row'>
     	<div class='col-sm-12'>
-    		<h1>jTimeout v.1.5 (only 4kb!)</h1>
+    		<h1>jTimeout v.1.6 (only 4kb!)</h1>
 			This cross-tab jQuery plugin keeps track of time and lets a user know before their session times out so they can extend it. Then tells them when it has expired so they can login again. The coolest part about jTimeout is that if a user loads 4 tabs with jTimeout on them, only 1 will control the countdown. If a tab is closed, another one will take over counting down. If another tab is opened, the timer will be reset (since the session timeout was reset). The only time the timer isn't reset but could/should be, is when an AJAX call is made that doesn't include jTimeout. You'll have to just call "$.jTimeout.reset(1440);" each time an AJAX call is made to reset the timer. Passing the number of seconds is optional, it'll default to the $.jTimeout.defaults.timeoutAfter param. If you don't implement this reset, no big deal. The session doesn't actually have to be expired for this plugin to work. It'll manually call the logout page on timeout.<br><br>
 	  	</div>
 	</div>
