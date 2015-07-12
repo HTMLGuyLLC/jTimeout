@@ -158,10 +158,46 @@
 
 			}
 
-			var timeoutAllowance = jTimeout.options.secondsPrior + 2;
+			/* Timeout */
+			if(seconds < 0 && !$timedOut)
+			{
+				
+				$timeoutWarned = true;
+				
+				$timedOut = true;
+				
+				if( !jTimeout.options.onTimeout )
+				{
+					/* Alert User */
+					$.jAlert({
+						'id': 'jTimedoutAlert',
+						'title': 'Oh No!',
+						'content': '<b>Your session has timed out.</b>',
+						'theme': 'red',
+						'btns': {
+							'text': 'Login Again',
+							'href': jTimeout.options.loginUrl,
+							'theme': 'blue',
+							'closeAlert': false
+						},
+						'closeOnClick': false,
+						'closeBtn': false,
+						'closeOnEsc': false,
+						'replaceOtherAlerts': true
+					});
 
+					/* Force logout */
+					$.get( jTimeout.options.logoutUrl );
+
+				}
+				else
+				{
+					jTimeout.options.onTimeout( jTimeout );
+				}
+
+			}
 			/* If less than x + 2 seconds left and not warned yet, show warning */
-			if(seconds < timeoutAllowance && !$timeoutWarned)
+			else if(seconds < jTimeout.options.secondsPrior && !$timeoutWarned)
 			{
 
 				$timeoutWarned = true;
@@ -229,44 +265,8 @@
 				}
 
 			}
-			/* Timeout */
-			else if(seconds < 0 && !$timedOut)
-			{
-				
-				$timedOut = true;
-				
-				if( !jTimeout.options.onTimeout )
-				{
-					/* Alert User */
-					$.jAlert({
-						'id': 'jTimedoutAlert',
-						'title': 'Oh No!',
-						'content': '<b>Your session has timed out.</b>',
-						'theme': 'red',
-						'btns': {
-							'text': 'Login Again',
-							'href': jTimeout.options.loginUrl,
-							'theme': 'blue',
-							'closeAlert': false
-						},
-						'closeOnClick': false,
-						'closeBtn': false,
-						'closeOnEsc': false,
-						'replaceOtherAlerts': true
-					});
-
-					/* Force logout */
-					$.get( jTimeout.options.logoutUrl );
-
-				}
-				else
-				{
-					jTimeout.options.onTimeout( jTimeout );
-				}
-
-			}
 			/* reset timeout warning if timeout was set higher */
-			else if( seconds > timeoutAllowance && ( $timeoutWarned || $timedOut ) )
+			else if( seconds > jTimeout.options.secondsPrior && ( $timeoutWarned || $timedOut ) )
 			{
 
 				jTimeout.stopFlashing();
