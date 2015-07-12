@@ -43,17 +43,20 @@
 		  			
 		  			$('.60Left').on('click', function(e){
 			  			e.preventDefault();
-			  			$('#curTime').val('60').trigger('change');
+			  			$.jTimeout.reset(60);
+			  			$('#curTime').val( window.localStorage.timeoutCountdown );
 		  			});
 		  			
 		  			$('.1440Left').on('click', function(e){
 			  			e.preventDefault();
-			  			$('#curTime').val('1440').trigger('change');
+			  			$.jTimeout.reset();
+			  			$('#curTime').val( window.localStorage.timeoutCountdown );
 		  			});
 		  			
 		  			$('.0Left').on('click', function(e){
 			  			e.preventDefault();
-			  			$.jTimeout.reset();
+			  			$.jTimeout.reset(0);
+			  			$('#curTime').val( window.localStorage.timeoutCountdown );
 		  			});
 
 	  				$.jTimeout({
@@ -74,11 +77,6 @@
 	  						$('#curTime').val( window.localStorage.timeoutCountdown );
 	  					}, 1000);
 	  				};
-
-	  				$('#curTime').on('change', function(){
-	  					window.localStorage.timeoutCountdown = $(this).val();
-	  					setTimer();
-	  				});
 
 	  				setTimer();
 
