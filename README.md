@@ -42,6 +42,10 @@ $(function(){
   	'tabID': false, //each tab needs a unique ID so you can tell which one last updated the timer - false makes it autogenerate one
   	'timeoutAfter': 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
   	'heartbeat': 1, //how many seconds in between checking and updating the timer - warning: this will effect the speed of the countdown prior
+
+    'extendOnMouseMove': true, //Whether or not to extend the session when the mouse is moved
+    'mouseDebounce': 30, //How many seconds between extending the session when the mouse is moved (instead of extending a billion times within 5 seconds)
+    'onMouseMove': false, //Override the standard $.get() request that uses the extendUrl with your own function.
   
   	'extendUrl': '/dashboard', //URL to request in order to extend the session.
   	'logoutUrl': '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
