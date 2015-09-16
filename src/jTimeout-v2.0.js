@@ -316,6 +316,10 @@
                     if( !jTimeout.onMouseMove )
                     {
                         $.get(jTimeout.options.extendUrl);
+                      
+                        jTimeout.setTimer( jTimeout.options.timeoutAfter );
+                        jTimeout.setTab( jTimeout.options.tabID );
+                        jTimeout.setTabLast();
                     }
                     else
                     {
