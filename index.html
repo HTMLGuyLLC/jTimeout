@@ -33,10 +33,31 @@
 	</div>
 	<div class='row'>
 	  	<div class='col-sm-12 col-md-6'>
-	  		<br><b>Try changing the timer below, click out of the input, and see how the plugin reacts.</b> Obviously the real timer runs in the background, this is just to help you visualize and debug.<br><br>
-	  		<input type='text' id='curTime' value='1440'>
+	  		<br><b>Watch the timer below and see how jTimeout reacts as it counts down/when you click the extend button.</b><br><br>
+	  		<input type='text' id='curTime' value='1440' readonly>
+	  		<a href='#' class='60Left btn btn-default'>60 Secs Left</a>
+	  		<a href='#' class='0Left btn btn-default'>Timed Out</a>
+	  		<a href='#' class='1440Left btn btn-default'>Reset</a>
 	  		<script>
 	  			$(function(){
+		  			
+		  			$('.60Left').on('click', function(e){
+			  			e.preventDefault();
+			  			$.jTimeout.reset(60);
+			  			$('#curTime').val( window.localStorage.timeoutCountdown );
+		  			});
+		  			
+		  			$('.1440Left').on('click', function(e){
+			  			e.preventDefault();
+			  			$.jTimeout.reset();
+			  			$('#curTime').val( window.localStorage.timeoutCountdown );
+		  			});
+		  			
+		  			$('.0Left').on('click', function(e){
+			  			e.preventDefault();
+			  			$.jTimeout.reset(0);
+			  			$('#curTime').val( window.localStorage.timeoutCountdown );
+		  			});
 
 	  				$.jTimeout({
 	  					/* For this example only */
@@ -55,28 +76,16 @@
 	  				setTimer = function(){
 	  					timer = window.setInterval(function(){
 	  						$('#curTime').val( window.localStorage.timeoutCountdown );
-	  					}, 2000);
-	  				},
-	  				clearTimer = function(){
-	  					if( timer )
-	  					{
-	  						window.clearInterval(timer);
-	  					}
+	  					}, 1000);
 	  				};
-
-	  				$('#curTime').on('blur', function(){
-	  					window.localStorage.timeoutCountdown = $(this).val();
-	  					setTimer();
-	  				});
-
-	  				$('#curTime').on('focus', function(){
-	  					clearTimer();
-	  				});
 
 	  				setTimer();
 
 	  			});
 	  		</script>
+	  		<br><br>
+	  		<a href='https://github.com/VersatilityWerks/jTimeout' class='btn btn-primary btn-lg'>View on Github</a>
+	  		<a href='https://github.com/VersatilityWerks/jTimeout/archive/master.zip' class='btn btn-success btn-lg'>Download</a>
 	  	</div>
   		<div class='col-sm-12 col-md-6'>
 	  		How to use (dead simple):<br>
@@ -124,6 +133,9 @@ $(function(){
 	'onTimeout': false //override the timeout function if you'd like
 	}
    );
+   
+   $.jTimeout.reset(); //will reset the timer to timeoutAfter above
+   $.jTimeout.reset(1000); //will set the timer to 1000 seconds
 });</pre>
 		</div>
 	</div>
