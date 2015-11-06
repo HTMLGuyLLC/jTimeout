@@ -63,11 +63,11 @@
 
         jTimeout.resetOnAlert = function () {
 
-            if(!jTimeout.options.triggerResetOnAlert) {
+            if (!jTimeout.options.triggerResetOnAlert) {
                 return $('#jTimeoutAlert').length == 0 && $('#jTimedoutAlert').length == 0;
             }
 
-            return true;
+            return $('#jTimedoutAlert').length == 0 && jTimeout.options.triggerResetOnAlert;
         };
 
         jTimeout.stopFlashing = function () {
@@ -325,7 +325,6 @@
     }
 
     $.jTimeout.defaults = {
-
         'flashTitle': true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
         'flashTitleSpeed': 500, //how quickly to switch between the original title, and the warning text
         'flashingTitleText': '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
