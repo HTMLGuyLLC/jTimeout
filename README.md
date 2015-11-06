@@ -34,29 +34,30 @@ This cross-tab jQuery plugin keeps track of time and lets a user know before the
 ```javascript
 $(function(){
    $.jTimeout({
-  	'flashTitle': true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
-  	'flashTitleSpeed': 500, //how quickly to switch between the original title, and the warning text
-  	'flashingTitleText': '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
-  	'originalTitle': document.title, //store the original title of this page
-  
-  	'tabID': false, //each tab needs a unique ID so you can tell which one last updated the timer - false makes it autogenerate one
-  	'timeoutAfter': 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
-  	'heartbeat': 1, //how many seconds in between checking and updating the timer - warning: this will effect the speed of the countdown prior
+        'flashTitle': true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
+        'flashTitleSpeed': 500, //how quickly to switch between the original title, and the warning text
+        'flashingTitleText': '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
+        'originalTitle': document.title, //store the original title of this page
 
-    'extendOnMouseMove': true, //Whether or not to extend the session when the mouse is moved
-    'mouseDebounce': 30, //How many seconds between extending the session when the mouse is moved (instead of extending a billion times within 5 seconds)
-    'onMouseMove': false, //Override the standard $.get() request that uses the extendUrl with your own function.
-  
-  	'extendUrl': '/dashboard', //URL to request in order to extend the session.
-  	'logoutUrl': '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
-  	'loginUrl': '/login', //URL to send a customer when they want to log back in
-  
-  	'secondsPrior': 60, //how many seconds before timing out to run the next callback (onPriorCallback)
-  	'onPriorCallback': false, //override the popup that shows when getting within x seconds of timing out
-  
-  	'onClickExtend': false, //override the click to extend button callback
-  
-  	'onTimeout': false //override the timeout function if you'd like
+        'tabID': false, //each tab needs a unique ID so you can tell which one last updated the timer - false makes it autogenerate one
+        'timeoutAfter': 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
+        'heartbeat': 1, //how many seconds in between checking and updating the timer
+
+        'extendOnMouseMove': true, //Whether or not to extend the session when the mouse is moved
+        'mouseDebounce': 30, //How many seconds between extending the session when the mouse is moved (instead of extending a billion times within 5 seconds)
+        'onMouseMove': false, //Override the standard $.get() request that uses the extendUrl with your own function.
+
+        'extendUrl': '/dashboard', //URL to request in order to extend the session.
+        'logoutUrl': '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
+        'loginUrl': '/login', //URL to send a customer when they want to log back in
+
+        'secondsPrior': 60, //how many seconds before timing out to run the next callback (onPriorCallback)
+
+        'triggerResetOnAlert': false, // should it reset the timer with mouse move while the alert is visible and hide it?
+
+        'onPriorCallback': false, //override the popup that shows when getting within x seconds of timing out
+        'onClickExtend': false, //override the click to extend button callback
+        'onTimeout': false //override the timeout function if you'd like
 	});
 });
 ```
