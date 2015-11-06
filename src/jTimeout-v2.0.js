@@ -1,25 +1,24 @@
-/* 
-    *
-    *
-    jTimeout v.2.1
-    Made with love by Versatility Werks (http://flwebsites.biz)
-    MIT Licensed
-    *
-    *
-*/
-;(function($) {
+/*
+ *
+ *
+ jTimeout v.2.1
+ Made with love by Versatility Werks (http://flwebsites.biz)
+ MIT Licensed
+ *
+ *
+ */
+(function ($) {
 
-    $.jTimeout = function(options) {
+    $.jTimeout = function (options) {
 
         var jTimeout = this,
             $timedOut = false, //whether or not the session has timed out
-            $flashingTitle = false, //stores the setInterval for flashing the title
             $timeoutWarned = false; //whether or not we've displayed a message about the session nearing timeout
 
         jTimeout.options = $.extend({}, $.jTimeout.defaults, options);
 
         /* Create a unique id for the current tab */
-        jTimeout.generateUid = function(separator) {
+        jTimeout.generateUid = function (separator) {
             var delim = separator || "-";
 
             function S4() {
@@ -29,47 +28,53 @@
             return (S4() + S4() + delim + S4() + delim + S4() + delim + S4() + delim + S4() + S4() + S4());
         };
 
-        jTimeout.getTimer = function(){
+        jTimeout.getTimer = function () {
             return window.localStorage.getItem('timeoutCountdown');
         };
 
-        jTimeout.setTimer = function(curTime){
+        jTimeout.setTimer = function (curTime) {
 
             return window.localStorage.setItem('timeoutCountdown', curTime);
         };
 
-        jTimeout.getTab = function(){
+        jTimeout.getTab = function () {
             return window.localStorage.getItem('timeoutTab');
         };
 
-        jTimeout.setTab = function(tab){
+        jTimeout.setTab = function (tab) {
             return window.localStorage.setItem('timeoutTab', tab);
         };
 
-        jTimeout.getTabLast = function(){
+        jTimeout.getTabLast = function () {
             return window.localStorage.getItem('timeoutTabLast');
         };
 
-        jTimeout.setTabLast = function(){
+        jTimeout.setTabLast = function () {
             return window.localStorage.setItem('timeoutTabLast', new Date());
         };
 
-        jTimeout.stopPriorCountdown = function(){
+        jTimeout.stopPriorCountdown = function () {
 
-            if( jTimeout.priorCountDown )
-            {
+            if (jTimeout.priorCountDown) {
                 jTimeout.priorCountDown = false;
             }
 
         };
 
-        jTimeout.stopFlashing = function(){
+        jTimeout.resetOnAlert = function () {
 
-            if( jTimeout.options.flashTitle ) 
-            {
-                if( jTimeout.flashingTitle )
-                {
-                    window.clearInterval( jTimeout.flashingTitle );
+            if(!jTimeout.options.triggerResetOnAlert) {
+                return $('#jTimeoutAlert').length == 0 && $('#jTimedoutAlert').length == 0;
+            }
+
+            return true;
+        };
+
+        jTimeout.stopFlashing = function () {
+
+            if (jTimeout.options.flashTitle) {
+                if (jTimeout.flashingTitle) {
+                    window.clearInterval(jTimeout.flashingTitle);
                 }
 
                 jTimeout.flashingTitle = false;
@@ -79,19 +84,16 @@
 
         };
 
-        jTimeout.startFlashing = function(){
+        jTimeout.startFlashing = function () {
 
-            if( !jTimeout.flashingTitle && jTimeout.options.flashTitle )
-            {
+            if (!jTimeout.flashingTitle && jTimeout.options.flashTitle) {
 
-                jTimeout.flashingTitle = window.setInterval(function(){
+                jTimeout.flashingTitle = window.setInterval(function () {
 
-                    if( document.title == jTimeout.options.flashingTitleText )
-                    {
+                    if (document.title == jTimeout.options.flashingTitleText) {
                         document.title = jTimeout.options.originalTitle;
                     }
-                    else
-                    {
+                    else {
                         document.title = jTimeout.options.flashingTitleText;
                     }
 
@@ -101,31 +103,29 @@
 
         };
 
-        jTimeout.startPriorCountdown = function(elem){
+        jTimeout.startPriorCountdown = function (elem) {
 
             jTimeout.priorCountDown = elem;
 
         };
 
-        jTimeout.hideAlerts = function(){
+        jTimeout.hideAlerts = function () {
 
             var timedOutAlert = $('#jTimeoutAlert'),
                 timeoutAlert = $('#jTimedoutAlert');
 
-            if( timedOutAlert.length > 0 )
-            {
+            if (timedOutAlert.length > 0) {
                 timedOutAlert.closeAlert();
             }
 
-            if( timeoutAlert.length > 0 )
-            {
+            if (timeoutAlert.length > 0) {
                 timeoutAlert.closeAlert();
             }
 
         };
 
         /* The magic happens here. This function loops every x seconds */
-        jTimeout.countdown = function(){
+        jTimeout.countdown = function () {
 
             /* Get current timer, tab that reported that time, and the time that tab reported */
             var seconds = jTimeout.getTimer(),
@@ -133,23 +133,20 @@
                 whichTabLast = jTimeout.getTabLast();
 
             /* If another tab updated it more than 2 seconds ago, this tab will take control */
-            if( whichTabLast < new Date('-2 seconds') )
-            {
-                seconds = seconds - Math.abs(((new Date()).getTime() - whichTabLast.getTime())/1000); //remove difference
+            if (whichTabLast < new Date('-2 seconds')) {
+                seconds = seconds - Math.abs(((new Date()).getTime() - whichTabLast.getTime()) / 1000); //remove difference
 
                 whichTab = jTimeout.options.tabID;
 
-                jTimeout.setTab( whichTab );
+                jTimeout.setTab(whichTab);
             }
 
-            if( jTimeout.priorCountDown )
-            {
+            if (jTimeout.priorCountDown) {
                 jTimeout.priorCountDown.text(seconds);
             }
 
             /* If the last tab to interact is the same as this one */
-            if( whichTab == jTimeout.options.tabID )
-            {
+            if (whichTab == jTimeout.options.tabID) {
                 seconds = seconds - jTimeout.options.heartbeat;
 
                 jTimeout.setTabLast();
@@ -159,15 +156,13 @@
             }
 
             /* Timeout */
-            if(seconds < 0 && !$timedOut)
-            {
-                
+            if (seconds < 0 && !$timedOut) {
+
                 $timeoutWarned = true;
-                
+
                 $timedOut = true;
-                
-                if( !jTimeout.options.onTimeout )
-                {
+
+                if (!jTimeout.options.onTimeout) {
                     /* Alert User */
                     $.jAlert({
                         'id': 'jTimedoutAlert',
@@ -187,55 +182,49 @@
                     });
 
                     /* Force logout */
-                    $.get( jTimeout.options.logoutUrl );
+                    $.get(jTimeout.options.logoutUrl);
 
                 }
-                else
-                {
-                    jTimeout.options.onTimeout( jTimeout );
+                else {
+                    jTimeout.options.onTimeout(jTimeout);
                 }
 
             }
             /* If less than x + 2 seconds left and not warned yet, show warning */
-            else if(seconds < jTimeout.options.secondsPrior && !$timeoutWarned)
-            {
+            else if (seconds < jTimeout.options.secondsPrior && !$timeoutWarned) {
 
                 $timeoutWarned = true;
 
                 jTimeout.startFlashing();
 
                 /* If there's not a callback override, use default */
-                if( !jTimeout.options.onPriorCallback )
-                {
+                if (!jTimeout.options.onPriorCallback) {
                     $.jAlert({
                         'id': 'jTimeoutAlert',
                         'title': 'Oh No!',
-                        'content': '<b>Your session will timeout in <span class="jTimeout_Countdown">'+seconds+'</span> seconds!</b>',
+                        'content': '<b>Your session will timeout in <span class="jTimeout_Countdown">' + seconds + '</span> seconds!</b>',
                         'theme': 'red',
                         'closeBtn': false,
-                        'onOpen': function(alert){
-                                jTimeout.startPriorCountdown( alert.find('.jTimeout_Countdown') );
-                            },
-                        'btns': 
-                        [
+                        'onOpen': function (alert) {
+                            jTimeout.startPriorCountdown(alert.find('.jTimeout_Countdown'));
+                        },
+                        'btns': [
                             {
                                 'text': 'Extend my Session',
                                 'theme': 'blue',
-                                'onClick': function(e, btn){
+                                'onClick': function (e, btn) {
 
                                     e.preventDefault();
 
-                                    if( !jTimeout.options.onClickExtend )
-                                    {
+                                    if (!jTimeout.options.onClickExtend) {
                                         /* Request dashboard to increase session */
-                                        $.get( jTimeout.options.extendUrl );
+                                        $.get(jTimeout.options.extendUrl);
 
-                                        jTimeout.setTimer( jTimeout.options.timeoutAfter );
-                                        jTimeout.setTab( jTimeout.options.tabID );
+                                        jTimeout.setTimer(jTimeout.options.timeoutAfter);
+                                        jTimeout.setTab(jTimeout.options.tabID);
                                         jTimeout.setTabLast();
                                     }
-                                    else
-                                    {
+                                    else {
                                         jTimeout.options.onClickExtend(jTimeout);
                                     }
 
@@ -246,28 +235,26 @@
                             },
                             {
                                 'text': 'Logout Now',
-                                'onClick': function(e, btn){
-                                    
+                                'onClick': function (e, btn) {
+
                                     e.preventDefault();
-                                    
+
                                     window.location.href = jTimeout.options.logoutUrl;
-                                    
+
                                     return false;
-                                    
+
                                 }
                             }
                         ]
                     });
                 }
-                else
-                {
-                    jTimeout.options.onPriorCallback( jTimeout );
+                else {
+                    jTimeout.options.onPriorCallback(jTimeout);
                 }
 
             }
             /* reset timeout warning if timeout was set higher */
-            else if( seconds > jTimeout.options.secondsPrior && ( $timeoutWarned || $timedOut ) )
-            {
+            else if (seconds > jTimeout.options.secondsPrior && ( $timeoutWarned || $timedOut )) {
 
                 jTimeout.stopFlashing();
 
@@ -283,8 +270,7 @@
 
         };
 
-        if( !jTimeout.options.tabID )
-        {
+        if (!jTimeout.options.tabID) {
             jTimeout.options.tabID = jTimeout.generateUid();
         }
 
@@ -293,52 +279,47 @@
         jTimeout.setTab(jTimeout.options.tabID);
         jTimeout.setTabLast();
 
-        var inMS = jTimeout.options.heartbeat*1000;
+        var inMS = jTimeout.options.heartbeat * 1000;
 
         setInterval(jTimeout.countdown, inMS);
 
-        if( jTimeout.options.extendOnMouseMove )
-        {
-            inMS = jTimeout.options.mouseDebounce*1000;
+        if (jTimeout.options.extendOnMouseMove) {
+            inMS = jTimeout.options.mouseDebounce * 1000;
 
             jTimeout.mouseMoved = false;
 
-            window.setTimeout(function(){
+            window.setTimeout(function () {
 
-	            $('body').on('mousemove', function(){
+                $('body').on('mousemove', function () {
 
-	                if( !jTimeout.mouseMoved )
-	                {
-	                    jTimeout.mouseMoved = true;
+                    if (!jTimeout.mouseMoved && jTimeout.resetOnAlert()) {
+                        jTimeout.mouseMoved = true;
 
-	                    window.setTimeout(function(){
-	                        jTimeout.mouseMoved = false;
-	                    }, inMS);
+                        window.setTimeout(function () {
+                            jTimeout.mouseMoved = false;
+                        }, inMS);
 
-	                    if( !jTimeout.onMouseMove )
-	                    {
-	                        $.get(jTimeout.options.extendUrl);
-	                      
-	                        jTimeout.setTimer( jTimeout.options.timeoutAfter );
-	                        jTimeout.setTab( jTimeout.options.tabID );
-	                        jTimeout.setTabLast();
-	                    }
-	                    else
-	                    {
-	                        jTimeout.options.onMouseMove();
-	                    }
-	                }
-	            });
+                        if (!jTimeout.onMouseMove) {
+                            $.get(jTimeout.options.extendUrl);
 
-	        }, inMS);
+                            jTimeout.setTimer(jTimeout.options.timeoutAfter);
+                            jTimeout.setTab(jTimeout.options.tabID);
+                            jTimeout.setTabLast();
+                        }
+                        else {
+                            jTimeout.options.onMouseMove();
+                        }
+                    }
+                });
+
+            }, inMS);
         }
 
         return this;
 
     };
-    
-    $.jTimeout.reset = function(seconds)
-    {
+
+    $.jTimeout.reset = function (seconds) {
         seconds = typeof seconds != 'undefined' ? seconds : $.jTimeout.defaults.timeoutAfter; //default to default timeoutAfter
         window.localStorage.timeoutCountdown = seconds; //set timeout countdown
     }
@@ -363,12 +344,13 @@
         'loginUrl': '/login', //URL to send a customer when they want to log back in
 
         'secondsPrior': 60, //how many seconds before timing out to run the next callback (onPriorCallback)
+
+        'triggerResetOnAlert': false, // should it reset the timer with mouse move while the alert is visible and hide it?
+
         'onPriorCallback': false, //override the popup that shows when getting within x seconds of timing out
-
         'onClickExtend': false, //override the click to extend button callback
-
         'onTimeout': false //override the timeout function if you'd like
     };
 
-/* END OF ON JQUERY LOAD */
+    /* END OF ON JQUERY LOAD */
 })(jQuery);
