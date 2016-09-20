@@ -9,7 +9,7 @@
 
     <title>jQuery Session Timeout Script</title>
 	<link rel='stylesheet' type='text/css' href='https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css'>
-	<link rel="stylesheet" type="text/css" href="http://flwebsites.biz/jAlert/src/jAlert-v3.css">
+	<link rel="stylesheet" type="text/css" href="http://flwebsites.biz/jAlert/dist/jAlert.css">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -19,15 +19,15 @@
     
     <script src='https://code.jquery.com/jquery-2.0.3.min.js'></script>
 	<script src='https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
-	<script src='http://flwebsites.biz/jAlert/src/jAlert-v3.js'></script>
-	<script src='src/jTimeout-v2.0.js'></script>
+	<script src='http://flwebsites.biz/jAlert/dist/jAlert.min.js'></script>
+	<script src='src/jTimeout.js'></script>
   </head>
 
   <body>
   <div class='container'>
     <div class='row'>
     	<div class='col-sm-12'>
-    		<h1>jTimeout v.2.0 (only 4kb!)</h1>
+    		<h1>jTimeout v3 (only 4kb!)</h1>
 	  		<h4>This cross-tab jQuery plugin keeps track of time and let's a user know before their session times out so they can extend it. Then tells them when it has expired so they can login again.</h4>
 	  	</div>
 	</div>
@@ -67,7 +67,7 @@
 	  						window.localStorage.timeoutCountdown = 1440
 	  						$('#curTime').val( 1440 );
 	  					},
-	  					'extendOnMouseMove': false,
+	  					'extendOnMouseMove': true,
 	  					'loginUrl': 'index.html',
 	  					'logoutUrl': 'index.html'
 	  				});
