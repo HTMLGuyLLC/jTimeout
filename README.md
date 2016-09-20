@@ -64,6 +64,11 @@ $(function(){
 });
 ```
 
+###Seting the default session length in PHP (recommended)
+```javascript
+$.jTimeout({ 'timeoutAfter': <?php echo ini_get('session.gc_maxlifetime'); ?> });
+```
+
 ### How to reset the timer
 ```javascript 
 $.jTimeout.reset();
