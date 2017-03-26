@@ -342,7 +342,7 @@
                             timeout.mouseMoved = false;
                         }, inMS);
 
-                        if (!timeout.onMouseMove)
+                        if (!options.onMouseMove)
                         {
                             $.get(options.extendUrl);
 
