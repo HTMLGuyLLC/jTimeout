@@ -15,12 +15,14 @@ This cross-tab jQuery plugin keeps track of time and lets a user know before the
 ## How to use
 ```html
 <html>
-<head></head>
+<head>
+<link rel="stylesheet" src="jAlert-master/dist/jAlert.css"/>
+</head>
 <body>
 <!-- your site content -->
 <script src='https://code.jquery.com/jquery-1.11.3.min.js'></script> <!-- Include jQuery -->
-<script src='jAlert-master/src/jAlert-v3.5.min.js'></script> <!-- Include jAlert - Get it here: http://flwebsites.biz/jAlert/ -->
-<script src='jTimeout-master/src/jTimeout-v1.5.min.js'></script> <!-- Include this Plugin -->
+<script src='jAlert-master/dist/jAlert.min.js'></script> <!-- Include jAlert - Get it here: http://flwebsites.biz/jAlert/ -->
+<script src='jTimeout-master/dist/jTimeout.min.js'></script> <!-- Include this Plugin -->
 <script>
   $(function(){
     $.jTimeout( options ); //options outlined below.
@@ -60,6 +62,11 @@ $(function(){
         'onTimeout': false //override the timeout function if you'd like
 	});
 });
+```
+
+###Seting the default session length in PHP (recommended)
+```javascript
+$.jTimeout({ 'timeoutAfter': <?php echo ini_get('session.gc_maxlifetime'); ?> });
 ```
 
 ### How to reset the timer
