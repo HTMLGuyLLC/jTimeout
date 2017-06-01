@@ -1,7 +1,7 @@
 /*
  *
  *
- jTimeout v3
+ jTimeout v2.1
  Made with love by Versatility Werks (http://flwebsites.biz)
  MIT Licensed
  *
