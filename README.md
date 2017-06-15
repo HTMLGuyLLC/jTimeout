@@ -100,7 +100,7 @@ $.jTimeout({
     //tell them they will be timing out soon!
     //to get the current time:
     var secondsLeft = jTimeout.getTimer();
-    console.log('You will be timed out in: '+secondsLeft'+ seconds');
+    console.log('You will be timed out in: '+secondsLeft+' seconds');
   }
 });
 ```
