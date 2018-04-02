@@ -132,6 +132,14 @@
 
                 return $('#jTimedoutAlert').length === 0 && timeout.options.triggerResetOnAlert;
             },
+			/**
+             * End session title
+             */
+            endTitle: function()
+            {
+                document.title = timeout.options.endTitleText;
+                
+            },
             /**
              * Stops flashing in the title
              */
@@ -254,6 +262,10 @@
                     timeout.stopMouseTimeout();
 
                     timeout.setTimer(0);
+					if (timeout.options.endTitleText!=''){
+						timeout.stopFlashing();
+						timeout.endTitle();
+					}
                 }
                 /* If less than x seconds left and not warned yet, show warning */
                 else if (seconds < timeout.options.secondsPrior && !timeout.timeoutWarning)
@@ -335,6 +347,7 @@
         'flashTitleSpeed': 500, //how quickly to switch between the original title, and the warning text
         'flashingTitleText': '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
         'originalTitle': document.title, //store the original title of this page
+		'endTitleText': 'SESSION EXPIRED', //what to show in the title when timeout
 
         'tabID': false, //each tab needs a unique ID so you can tell which one last updated the timer - false makes it autogenerate one
         'timeoutAfter': 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
