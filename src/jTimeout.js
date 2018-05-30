@@ -2,6 +2,9 @@
  *
  *
  jTimeout v2.1
+ VERSION MODIFICADA POR josé javier fernández mendoza
+ - se añade la propiedad endTitleText
+ - nueva propiedad para poder poner una caja de texto arriba a la izquierda con el contador que falta
  Made with love by Versatility Werks (http://flwebsites.biz)
  MIT Licensed
  *
@@ -78,6 +81,22 @@
             setTimer: function(curTime)
             {
                 return this.set('timeoutCountdown', curTime);
+            },
+			/**
+             * Gets the current time left
+             */
+            getTimeStart: function()
+            {
+                return this.get('timestart');
+            },
+            /**
+             * Sets the time left
+             *
+             * @param curTime
+             */
+            setTimeStart: function(curTime)
+            {
+                return this.set('timestart', curTime);
             },
             /**
              * Gets the tab that is controlling the timeout countdown
@@ -227,6 +246,12 @@
                 var seconds = timeout.getTimer(),
                     whichTab = timeout.getTab(),
                     whichTabLast = timeout.getTabLast();
+				var now=new Date().getTime();
+				var timestartcount=timeout.getTimeStart();
+				if (timeout.options.cajacontador){
+					$('#jtimeoutcontador').html(seconds);
+				}
+				///$('#timestart').html(timestartcount);
 
                 /* If another tab updated it more than 2 seconds ago, this tab will take control */
                 if (whichTabLast < new Date('-2 seconds'))
@@ -250,7 +275,7 @@
                 }
 
                 /* Timeout */
-                if (seconds <= 0 && !timeout.timedOut)
+                if ((seconds <= 0 || now>(timestartcount + timeout.options.timeoutAfter) ) && !timeout.timedOut)
                 {
                     timeout.timeoutWarning = true;
                     timeout.timedOut = true;
@@ -284,6 +309,7 @@
                     timeout.stopPriorCountdown();
                     timeout.hideCountdownAlert();
                 }
+				
             }
         };
 
@@ -295,6 +321,7 @@
 
         /* Set defaults in localStorage (shared storage across tabs) */
         timeout.setTimer(timeout.options.timeoutAfter);
+		timeout.setTimeStart(new Date().getTime());
         timeout.setTab(timeout.options.tabID);
         timeout.setTabLast();
 
@@ -329,6 +356,9 @@
 
             }, inMS));
         }
+		if (timeout.options.cajacontador){
+			$('body').after('<div id="jtimeoutcontador"></div>');
+		}
 
         window.jTimeout = timeout;
 
@@ -342,18 +372,18 @@
         $.jTimeout().set('timeoutCountdown', seconds); //set timeout countdown
     };
 
-    $.jTimeout.defaults = {
+    $.jTimeout.defaults = { 
         'flashTitle': true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
-        'flashTitleSpeed': 500, //how quickly to switch between the original title, and the warning text
+        'flashTitleSpeed': 1000, //how quickly to switch between the original title, and the warning text
         'flashingTitleText': '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
         'originalTitle': document.title, //store the original title of this page
 		'endTitleText': 'SESSION EXPIRED', //what to show in the title when timeout
-
+		'cajacontador':false,
         'tabID': false, //each tab needs a unique ID so you can tell which one last updated the timer - false makes it autogenerate one
-        'timeoutAfter': 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
+        'timeoutAfter': 600, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
         'heartbeat': 1, //how many seconds in between checking and updating the timer
 
-        'extendOnMouseMove': true, //Whether or not to extend the session when the mouse is moved
+        'extendOnMouseMove': false, //Whether or not to extend the session when the mouse is moved
         'mouseDebounce': 30, //How many seconds between extending the session when the mouse is moved (instead of extending a billion times within 5 seconds)
         'onMouseMove': function(timeout){
             //request the session extend page
@@ -365,9 +395,9 @@
             timeout.setTabLast();
         }, //Override the standard $.get() request that uses the extendUrl with your own function.
 
-        'extendUrl': '/dashboard', //URL to request in order to extend the session.
-        'logoutUrl': '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
-        'loginUrl': '/login', //URL to send a customer when they want to log back in
+        'extendUrl': 'mantenersesion.php', //URL to request in order to extend the session.
+        'logoutUrl': 'desconectar.php', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
+        'loginUrl': 'login.php', //URL to send a customer when they want to log back in
 
         'secondsPrior': 60, //how many seconds before timing out to run the next callback (onPriorCallback)
 
@@ -378,7 +408,7 @@
             $.jAlert({
                 'id': 'jTimeoutAlert',
                 'title': 'Oh No!',
-                'content': '<b>Your session will timeout in <span class="jTimeout_Countdown">' + seconds + '</span> seconds!</b>',
+                'content': '<b>Tu sesi&oacute;n terminar&aacute; en <span class="jTimeout_Countdown">' + seconds + '</span> segundos!</b>',
                 'theme': 'red',
                 'closeBtn': false,
                 'onOpen': function (alert) {
@@ -386,7 +416,7 @@
                 },
                 'btns': [
                     {
-                        'text': 'Extend my Session',
+                        'text': 'Continuar',
                         'theme': 'blue',
                         'onClick': function (e, btn) {
 
@@ -400,7 +430,7 @@
                         }
                     },
                     {
-                        'text': 'Logout Now',
+                        'text': 'Salir',
                         'onClick': function (e, btn) {
 
                             e.preventDefault();
@@ -429,10 +459,10 @@
             $.jAlert({
                 'id': 'jTimedoutAlert',
                 'title': 'Oh No!',
-                'content': '<b>Your session has timed out.</b>',
+                'content': '<b>Tu sesi&oacute;n ha caducado.</b>',
                 'theme': 'red',
                 'btns': {
-                    'text': 'Login Again',
+                    'text': 'Entrar de nuevo',
                     'href': timeout.options.loginUrl,
                     'theme': 'blue',
                     'closeAlert': false
@@ -446,6 +476,8 @@
             $.get(timeout.options.logoutUrl);
         }
     };
+	 $( "<style>#jtimeoutcontador {position: absolute;top:0;font-size: 6pt;color: #777777;}</style>" ).appendTo( "head" )
+ 
 
     /* END OF ON JQUERY LOAD */
 })(jQuery);
