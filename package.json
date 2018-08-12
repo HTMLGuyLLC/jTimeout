@@ -1,5 +1,5 @@
 {
-  "name": "jTimeout",
+  "name": "jtimeout",
   "version": "3.0.0",
   "description": "jQuery session timeout handler",
   "repository": {

@@ -11,6 +11,11 @@ This cross-tab jQuery plugin keeps track of time and lets a user know before the
  - jQuery
  - jAlert (unless you override the callbacks) :: available here: https://github.com/HTMLGuyLLC/jAlert
 
+## Available on NPM
+https://www.npmjs.com/package/jtimeout
+```
+npm i jtimeout
+```
 
 ## How to use
 ```html
