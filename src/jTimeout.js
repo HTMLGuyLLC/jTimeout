@@ -1,7 +1,7 @@
 /*
  *
  *
- jTimeout v2.3
+ jTimeout v3
  Made with love by HTMLGuy, LLC
  MIT Licensed
  *
@@ -20,97 +20,54 @@
 
         var timeout =
         {
-            /**
-             * Whether or not the session has timed out
-             */
+            //key used to store expiration in localstorage
+            expiration_key: 'jtimeout-session-expiration',
+            //Whether or not the session has timed out
             timedOut: false,
-            /**
-             * Whether or not there is currently a timeout warning on the screen
-             */
+            //whether or not to warn the person before the session expires
             timeoutWarning: false,
-            /**
-             * The interval loop for counting down
-             */
+            //The interval loop for counting down
             interval: false,
-            /**
-             * The settimeout for mouse movement to be debounced
-             */
+            //The settimeout for mouse movement to be debounced
             mouseTimeout: false,
-
+            //all options provided
             options: options,
-
-            /**
-             * Generates a random ID to identify the current tab
-             * 
-             * @param separator
-             * @returns {*}
-             */
-            generateUid: function(separator)
-            {
-                var delim = separator || "-";
-
-                return (this.S4() + this.S4() + delim + this.S4() + delim + this.S4() + delim + this.S4() + delim + this.S4() + this.S4() + this.S4());
-            },
-            S4: function()
-            {
-                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-            },
+            //get from localstorage
             get: function(key)
             {
                 return window.localStorage.getItem(key);
             },
+            //set to localstorage
             set: function(key, val)
             {
                 return window.localStorage.setItem(key, val);
             },
-            /**
-             * Gets the current time left
-             */
-            getTimer: function()
+            //gets the expiration date
+            getExpiration: function()
             {
-                return this.get('timeoutCountdown');
+                return this.get(this.expiration_key);
             },
-            /**
-             * Sets the time left
-             *
-             * @param curTime
-             */
-            setTimer: function(curTime)
+            //sets the expiration date based on relative seconds
+            setExpiration: function(seconds_till_expiration)
             {
-                return this.set('timeoutCountdown', curTime);
+                var d = new Date();
+                d.setSeconds(d.getSeconds() + seconds_till_expiration);
+                return this.set(this.expiration_key, d);
             },
-            /**
-             * Gets the tab that is controlling the timeout countdown
-             */
-            getTab: function()
+            //sets the expiration based on the provided session duration
+            resetExpiration: function()
             {
-                return this.get('timeoutTab');
+                this.setExpiration(this.options.timeoutAfter);
+                return this;
             },
-            /**
-             * Sets the tab that is controlling the timeout countdown
-             * @param tab
-             */
-            setTab: function(tab)
+            //returns the number of seconds before the session expires
+            getSecondsTillExpiration: function()
             {
-                return this.set('timeoutTab', tab);
+                //gets expiration seconds minus current seconds
+                var seconds = Math.round(((new Date(this.getExpiration())).getTime() - (new Date()).getTime()) / 1000);
+                return seconds <= 0 ? 0 : seconds;
             },
-            /**
-             * Gets the last tab that updated the timer countdown
-             */
-            getTabLast: function()
-            {
-                return this.get('timeoutTabLast');
-            },
-            /**
-             * Sets the last tab that updated the timer countdown
-             */
-            setTabLast: function()
-            {
-                return this.set('timeoutTabLast', new Date());
-            },
-            /**
-             * Stops the countdown prior to timeout
-             */
+            //stops the prior to timeout countdown
             stopPriorCountdown: function()
             {
                 if (timeout.priorCountDown)
@@ -202,71 +159,87 @@
                     window.clearTimeout(this.mouseTimeout);
                 }
             },
+            //stops monitoring for user activity
+            stopActivityMonitoring: function()
+            {
+                timeout.stopMouseTimeout();
+            },
+            //every so often (if enabled) a call will be made to extend a session because the user is actively using the website
+            startActivityMonitoring: function()
+            {
+                //if already started, stop (prevent dupe)
+                timeout.stopActivityMonitoring();
+
+                //if enabled
+                if(timeout.options.extendOnMouseMove)
+                {
+                    inMS = timeout.options.mouseDebounce * 1000;
+                    timeout.mouseMoved = false;
+
+                    //delay the initial mousemove watch for x seconds
+                    timeout.setMouseTimeout(window.setTimeout(function ()
+                    {
+                        //on mouse move
+                        $('body').on('mousemove', function ()
+                        {
+                            if (!timeout.mouseMoved && timeout.resetOnAlert())
+                            {
+                                timeout.mouseMoved = true;
+
+                                timeout.setMouseTimeout(window.setTimeout(function ()
+                                {
+                                    timeout.mouseMoved = false;
+                                }, inMS));
+
+                                timeout.options.onMouseMove(timeout);
+                            }
+                        });
+
+                    }, inMS));
+                }
+            },
             setCountdown: function(interval){
                 this.interval = interval;
-            },
-            stopCountdown: function()
-            {
-                if( this.interval )
-                {
-                    window.clearInterval(this.interval);
-                }
             },
             /* The magic happens here. This function loops every x seconds */
             countdown: function()
             {
                 /* Get current timer, tab that reported that time, and the time that tab reported */
-                var seconds = timeout.getTimer(),
-                    whichTab = timeout.getTab(),
-                    whichTabLast = timeout.getTabLast();
+                var expiration = timeout.getExpiration();
+                var seconds_till_expires = timeout.getSecondsTillExpiration();
 
-                /* If another tab updated it more than 2 seconds ago, this tab will take control */
-                if (whichTabLast < new Date('-2 seconds'))
-                {
-                    seconds = seconds - Math.abs(((new Date()).getTime() - whichTabLast.getTime()) / 1000); //remove difference
-                    whichTab = timeout.options.tabID;
-                    timeout.setTab(whichTab);
-                }
-
+                //if there is a prior countdown
                 if (timeout.priorCountDown)
                 {
-                    timeout.priorCountDown.text(seconds);
-                }
-
-                /* If the last tab to interact is the same as this one */
-                if (whichTab === timeout.options.tabID)
-                {
-                    seconds = seconds - Math.abs(((new Date()).getTime() - new Date(whichTabLast).getTime()) / 1000);
-                    timeout.setTabLast();
-                    timeout.setTimer(seconds);
+                    timeout.priorCountDown.text(seconds_till_expires);
                 }
 
                 /* Timeout */
-                if (seconds <= 0 && !timeout.timedOut)
+                if (seconds_till_expires <= 0 && !timeout.timedOut)
                 {
                     timeout.timeoutWarning = true;
                     timeout.timedOut = true;
-
                     timeout.options.onTimeout(timeout);
-
-                    timeout.stopCountdown();
-
-                    timeout.stopMouseTimeout();
-
-                    timeout.setTimer(0);
+                    timeout.stopActivityMonitoring();
+                }
+                //if timed out and session was extended
+                else if( seconds_till_expires > 0 && timeout.timedOut )
+                {
+                    timeout.timeoutWarning = false;
+                    timeout.timedOut = false;
+                    timeout.options.onSessionExtended(timeout);
+                    timeout.startActivityMonitoring();
                 }
                 /* If less than x seconds left and not warned yet, show warning */
-                else if (seconds < timeout.options.secondsPrior && !timeout.timeoutWarning)
+                else if (seconds_till_expires < timeout.options.secondsPrior && !timeout.timeoutWarning)
                 {
                     timeout.timeoutWarning = true;
-
                     timeout.startFlashing();
-
-                    timeout.options.onPriorCallback(timeout, seconds);
+                    timeout.options.onPriorCallback(timeout, seconds_till_expires);
 
                 }
                 /* reset timeout warning if timeout was set higher */
-                else if (seconds >= timeout.options.secondsPrior && timeout.timeoutWarning)
+                else if (seconds_till_expires >= timeout.options.secondsPrior && timeout.timeoutWarning)
                 {
                     timeout.stopFlashing();
                     timeout.stopPriorCountdown();
@@ -275,93 +248,48 @@
             }
         };
 
-        //if no tab id was provided, generate a unique tab id
-        if (!timeout.options.tabID)
-        {
-            timeout.options.tabID = timeout.generateUid();
-        }
-
-        /* Set defaults in localStorage (shared storage across tabs) */
-        timeout.setTimer(timeout.options.timeoutAfter);
-        timeout.setTab(timeout.options.tabID);
-        timeout.setTabLast();
+        //sets time of current expiration
+        timeout.resetExpiration();
 
         var inMS = timeout.options.heartbeat * 1000;
-
         timeout.setCountdown(window.setInterval(timeout.countdown, inMS));
 
-        if(timeout.options.extendOnMouseMove)
-        {
-            inMS = timeout.options.mouseDebounce * 1000;
-
-            timeout.mouseMoved = false;
-
-            //delay the initial mousemove watch for x seconds
-            timeout.setMouseTimeout(window.setTimeout(function ()
-            {
-                //on mouse move
-                $('body').on('mousemove', function ()
-                {
-                    if (!timeout.mouseMoved && timeout.resetOnAlert())
-                    {
-                        timeout.mouseMoved = true;
-
-                        timeout.setMouseTimeout(window.setTimeout(function ()
-                        {
-                            timeout.mouseMoved = false;
-                        }, inMS));
-
-                        timeout.options.onMouseMove(timeout);
-                    }
-                });
-
-            }, inMS));
-        }
+        timeout.startActivityMonitoring();
 
         window.jTimeout = timeout;
 
         return timeout;
     };
 
-    $.jTimeout.reset = function (seconds)
+    $.jTimeout.reset = function(seconds_till_expiration)
     {
-        seconds = typeof seconds !== 'undefined' ? seconds : $.jTimeout.defaults.timeoutAfter; //default to default timeoutAfter
-
-        $.jTimeout().set('timeoutCountdown', seconds); //set timeout countdown
+        var seconds = typeof seconds_till_expiration === 'undefined' ? $.jTimeout.defaults.timeoutAfter : seconds_till_expiration;
+        $.jTimeout().setExpiration(seconds);
     };
 
     $.jTimeout.defaults = {
-        'flashTitle': true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
-        'flashTitleSpeed': 500, //how quickly to switch between the original title, and the warning text
-        'flashingTitleText': '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
-        'originalTitle': document.title, //store the original title of this page
-
-        'tabID': false, //each tab needs a unique ID so you can tell which one last updated the timer - false makes it autogenerate one
-        'timeoutAfter': 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
-        'heartbeat': 1, //how many seconds in between checking and updating the timer
-
-        'extendOnMouseMove': true, //Whether or not to extend the session when the mouse is moved
-        'mouseDebounce': 30, //How many seconds between extending the session when the mouse is moved (instead of extending a billion times within 5 seconds)
-        'onMouseMove': function(timeout){
+        flashTitle: true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
+        flashTitleSpeed: 500, //how quickly to switch between the original title, and the warning text
+        flashingTitleText: '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
+        originalTitle: document.title, //store the original title of this page
+        timeoutAfter: 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
+        heartbeat: 1, //how many seconds in between checking and updating the timer
+        extendOnMouseMove: true, //Whether or not to extend the session when the mouse is moved
+        mouseDebounce: 30, //How many seconds between extending the session when the mouse is moved (instead of extending a billion times within 5 seconds)
+        onMouseMove: function(timeout){
             //request the session extend page
-            $.get(timeout.options.extendUrl);
-            //reset timer
-            timeout.setTimer(timeout.options.timeoutAfter);
-            //set cur tab to this one
-            timeout.setTab(timeout.options.tabID);
-            timeout.setTabLast();
+            $.get(timeout.options.extendUrl, function(){
+                //reset expiration
+                timeout.resetExpiration();
+            });
         }, //Override the standard $.get() request that uses the extendUrl with your own function.
-
-        'extendUrl': '/dashboard', //URL to request in order to extend the session.
-        'logoutUrl': '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
-        'loginUrl': '/login', //URL to send a customer when they want to log back in
-
-        'secondsPrior': 60, //how many seconds before timing out to run the next callback (onPriorCallback)
-
-        'triggerResetOnAlert': false, // should it reset the timer with mouse move while the alert is visible and hide it?
-
+        extendUrl: '/dashboard', //URL to request in order to extend the session.
+        logoutUrl: '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
+        loginUrl: '/login', //URL to send a customer when they want to log back in
+        secondsPrior: 60, //how many seconds before timing out to run the next callback (onPriorCallback)
+        triggerResetOnAlert: false, // should it reset the timer with mouse move while the alert is visible and hide it?
         //override the popup that shows when getting within x seconds of timing out
-        'onPriorCallback': function(timeout, seconds){
+        onPriorCallback: function(timeout, seconds){
             $.jAlert({
                 'id': 'jTimeoutAlert',
                 'title': 'Oh No!',
@@ -376,42 +304,31 @@
                         'text': 'Extend my Session',
                         'theme': 'blue',
                         'onClick': function (e, btn) {
-
                             e.preventDefault();
-
                             timeout.options.onClickExtend(timeout);
-
                             btn.parents('.jAlert').closeAlert();
-
                             return false;
                         }
                     },
                     {
                         'text': 'Logout Now',
                         'onClick': function (e, btn) {
-
                             e.preventDefault();
-
                             window.location.href = timeout.options.logoutUrl;
-
                             return false;
-
                         }
                     }
                 ]
             });
         },
         //override the click to extend button callback
-        'onClickExtend': function(timeout){
+        onClickExtend: function(timeout){
             /* Request dashboard to increase session */
             $.get(timeout.options.extendUrl);
-
-            timeout.setTimer(timeout.options.timeoutAfter);
-            timeout.setTab(timeout.options.tabID);
-            timeout.setTabLast();
+            timeout.resetExpiration();
         },
         //override the timeout function if you'd like
-        'onTimeout': function(timeout){
+        onTimeout: function(timeout){
             /* Alert User */
             $.jAlert({
                 'id': 'jTimedoutAlert',
@@ -431,6 +348,11 @@
 
             /* Force logout */
             $.get(timeout.options.logoutUrl);
+        },
+        //if session is extended after timeout, hide the timeout popup
+        onSessionExtended: function(timeout)
+        {
+            $('#jTimedoutAlert').closeAlert();
         }
     };
 

@@ -27,14 +27,14 @@
   <div class='container'>
     <div class='row'>
     	<div class='col-sm-12'>
-    		<h1>jTimeout v2 (only 4kb!)</h1>
+    		<h1>jTimeout v3 (only 4kb!)</h1>
 	  		<h4>This cross-tab jQuery plugin keeps track of time and let's a user know before their session times out so they can extend it. Then tells them when it has expired so they can login again.</h4>
 	  	</div>
 	</div>
 	<div class='row'>
 	  	<div class='col-sm-12 col-md-6'>
 	  		<br><b>Watch the timer below and see how jTimeout reacts as it counts down/when you click the extend button.</b><br><br>
-	  		<input type='text' id='curTime' value='1440' readonly>
+	  		<input type='text' id='secondsRemaining' value='1440' readonly>
 	  		<a href='#' class='60Left btn btn-default'>60 Secs Left</a>
 	  		<a href='#' class='0Left btn btn-default'>Timed Out</a>
 	  		<a href='#' class='1440Left btn btn-default'>Reset</a>
@@ -44,19 +44,19 @@
 		  			$('.60Left').on('click', function(e){
 			  			e.preventDefault();
 			  			$.jTimeout.reset(60);
-			  			$('#curTime').val( window.localStorage.timeoutCountdown );
+			  			$('#secondsRemaining').val( $.jTimeout().getSecondsTillExpiration() );
 		  			});
 		  			
 		  			$('.1440Left').on('click', function(e){
 			  			e.preventDefault();
 			  			$.jTimeout.reset();
-			  			$('#curTime').val( window.localStorage.timeoutCountdown );
+			  			$('#secondsRemaining').val( $.jTimeout().getSecondsTillExpiration() );
 		  			});
 		  			
 		  			$('.0Left').on('click', function(e){
 			  			e.preventDefault();
 			  			$.jTimeout.reset(0);
-			  			$('#curTime').val( window.localStorage.timeoutCountdown );
+			  			$('#secondsRemaining').val( $.jTimeout().getSecondsTillExpiration() );
 		  			});
 
 	  				$.jTimeout({
@@ -64,8 +64,7 @@
 	  					'onClickExtend': function(jTimeout)
 	  					{
 	  						$('.jAlert').closeAlert();
-	  						window.localStorage.timeoutCountdown = 1440
-	  						$('#curTime').val( 1440 );
+	  						$.jTimeout().resetExpiration();
 	  					},
 	  					'extendOnMouseMove': true,
 	  					'loginUrl': 'index.html',
@@ -75,7 +74,7 @@
 	  				var timer,
 	  				setTimer = function(){
 	  					timer = window.setInterval(function(){
-	  						$('#curTime').val( window.localStorage.timeoutCountdown );
+	  						$('#secondsRemaining').val( $.jTimeout().getSecondsTillExpiration() );
 	  					}, 1000);
 	  				};
 
@@ -108,34 +107,36 @@ $(function(){
 $(function(){
    $.jTimeout(
    	{
-	'flashTitle': true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
-	'flashTitleSpeed': 500, //how quickly to switch between the original title, and the warning text
-	'flashingTitleText': '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
-	'originalTitle': document.title, //store the original title of this page
+		flashTitle: true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
+		flashTitleSpeed: 500, //how quickly to switch between the original title, and the warning text
+		flashingTitleText: '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
+		originalTitle: document.title, //store the original title of this page
 
-	'tabID': false, //each tab needs a unique ID so you can tell which one last updated the timer - false makes it autogenerate one
-	'timeoutAfter': 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
-	'heartbeat': 1, //how many seconds in between checking and updating the timer - warning: this will effect the speed of the countdown prior
+		timeoutAfter: 1440, //pass this from server side to be fully-dynamic. For PHP: ini_get('session.gc_maxlifetime'); - 1440 is generally the default timeout
+		heartbeat: 1, //how many seconds in between checking the expiration - warning: changing this can effect your prior countdown warning and timeout - for best results, stick with 1
 
-    'extendOnMouseMove': true, //Whether or not to extend the session when the mouse is moved
-    'mouseDebounce': 30, //How many seconds between extending the session when the mouse is moved (instead of extending a billion times within 5 seconds)
-    'onMouseMove': false, //Override the standard $.get() request that uses the extendUrl with your own function.
+		extendOnMouseMove: true, //Whether or not to extend the session when the mouse is moved
+		mouseDebounce: 30, //How many seconds between extending the session when the mouse is moved (instead of extending a billion times within 5 seconds)
+		onMouseMove: false, //Override the standard $.get() request that uses the extendUrl with your own function.
 
-	'extendUrl': '/dashboard', //URL to request in order to extend the session.
-	'logoutUrl': '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
-	'loginUrl': '/login', //URL to send a customer when they want to log back in
+		extendUrl: '/dashboard', //URL to request in order to extend the session.
+		logoutUrl: '/logout', //URL to request in order to force a logout after the timeout. This way you can end a session early based on a shorter timeout OR if the front-end timeout doesn't sync with the backend one perfectly, you don't look like an idiot.
+		loginUrl: '/login', //URL to send a customer when they want to log back in
 
-	'secondsPrior': 60, //how many seconds before timing out to run the next callback (onPriorCallback)
-	'onPriorCallback': false, //override the popup that shows when getting within x seconds of timing out
+		secondsPrior: 60, //how many seconds before timing out to run the next callback (onPriorCallback)
+		onPriorCallback: false, //override the popup that shows when getting within x seconds of timing out
 
-	'onClickExtend': false, //override the click to extend button callback
+		onClickExtend: false, //override the click to extend button callback
 
-	'onTimeout': false //override the timeout function if you'd like
+		onTimeout: false, //override the timeout function if you'd like
+		onSessionExtended: false //override the session extension method (triggered only after a timeout)
 	}
    );
-   
-   $.jTimeout.reset(); //will reset the timer to timeoutAfter above
-   $.jTimeout.reset(1000); //will set the timer to 1000 seconds
+
+   $.jTimeout().reset(); //will reset the expiration using the timeoutAfter option above
+   $.jTimeout().setExpiration(1000); //will set the expiration to 1000 seconds in the future
+   $.jTimeout().getExpiration(); //gets the expiration date string
+   $.jTimeout().getSecondsTillExpiration(); //gets the number of seconds until the session expires
 });</pre>
 		</div>
 	</div>
