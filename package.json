@@ -1,0 +1,21 @@
+{
+  "name": "jTimeout",
+  "version": "2.3.0",
+  "description": "jQuery session timeout handler",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HTMLGuyLLC/jTimeout"
+  },
+  "bugs": {
+    "url": "https://github.com/HTMLGuyLLC/jTimeout/issues"
+  },
+  "homepage": "https://htmlguyllc.github.io/jTimeout/",
+  "private": false,
+  "dependencies": {
+    "jquery": "^1.7.1"
+  },
+  "license":{
+    "type": "MIT",
+    "url": "https://www.opensource.org/licenses/mit-license.php"
+  }
+}
