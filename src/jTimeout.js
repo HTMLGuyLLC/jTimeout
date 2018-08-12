@@ -236,7 +236,7 @@
                 /* If the last tab to interact is the same as this one */
                 if (whichTab === timeout.options.tabID)
                 {
-                    seconds = seconds - timeout.options.heartbeat;
+                    seconds = seconds - Math.abs(((new Date()).getTime() - new Date(whichTabLast).getTime()) / 1000);
                     timeout.setTabLast();
                     timeout.setTimer(seconds);
                 }
