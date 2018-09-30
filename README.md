@@ -1,5 +1,7 @@
 # jTimeout
-By HTMLGuy, LLC (https://htmlguy.com)
+by HTMLGuy, LLC (https://htmlguy.com)
+
+![example jtimeout](https://htmlguyllc.github.io/jTimeout/example.png)
 
 ## Demo 
 [https://htmlguyllc.github.io/jTimeout/](http://htmlguyllc.github.io/jTimeout/)
