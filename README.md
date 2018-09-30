@@ -16,7 +16,7 @@ jQuery session timeout handler - Tracks a user's session expiration and lets the
 ## Available on NPM
 https://www.npmjs.com/package/jtimeout
 ```
-npm i jtimeout
+npm install jtimeout
 ```
 
 ## How to use
