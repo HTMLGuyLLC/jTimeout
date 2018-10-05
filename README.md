@@ -91,10 +91,11 @@ $.jTimeout().setExpiration(1440);
 ### Recommended reset usage
 Everytime you request a page that extends a user's session, use the reset function:
 ```javascript
-$.get('/my-ajax-page', function(data){
+$(document).ajaxStop(function(){
   $.jTimeout().reset();
   //handle ajax response
 });
+//warning: If $.ajax() or $.ajaxSetup() is called with the global option set to false, the .ajaxStop() method will not fire.
 ```
 
 ### If you want to use your own modal 
