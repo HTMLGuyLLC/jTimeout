@@ -93,7 +93,6 @@ Everytime you request a page that extends a user's session, use the reset functi
 ```javascript
 $(document).ajaxStop(function(){
   $.jTimeout().reset();
-  //handle ajax response
 });
 //warning: If $.ajax() or $.ajaxSetup() is called with the global option set to false, the .ajaxStop() method will not fire.
 ```
