@@ -278,9 +278,13 @@
         mouseDebounce: 30, //How many seconds between extending the session when the mouse is moved (instead of extending a billion times within 5 seconds)
         onMouseMove: function(timeout){
             //request the session extend page
-            $.get(timeout.options.extendUrl, function(){
-                //reset expiration
-                timeout.resetExpiration();
+            $.get({
+                url: timeout.options.extendUrl,
+                cache: false,
+                success: function(){
+                    //reset expiration
+                    timeout.resetExpiration();
+                }
             });
         }, //Override the standard $.get() request that uses the extendUrl with your own function.
         extendUrl: '/dashboard', //URL to request in order to extend the session.
@@ -324,7 +328,10 @@
         //override the click to extend button callback
         onClickExtend: function(timeout){
             /* Request dashboard to increase session */
-            $.get(timeout.options.extendUrl);
+            $.get({
+                url: timeout.options.extendUrl,
+                cache: false
+            });
             timeout.resetExpiration();
         },
         //override the timeout function if you'd like
