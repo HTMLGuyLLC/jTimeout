@@ -180,7 +180,7 @@
                     timeout.setMouseTimeout(window.setTimeout(function ()
                     {
                         //on mouse move
-                        $('body').on('mousemove', function ()
+                        $('body').on('mousemove.jTimeout', function ()
                         {
                             if (!timeout.mouseMoved && timeout.resetOnAlert())
                             {
@@ -245,6 +245,16 @@
                     timeout.stopPriorCountdown();
                     timeout.hideCountdownAlert();
                 }
+            },
+            /* When you are all done, destroy all the timers -- or just let the user navigate away from the page. */
+            destructor: function () {
+                timeout.stopFlashing();
+                timeout.stopActivityMonitoring();
+                delete timeout.options.onSessionExtended;
+                delete timeout.countdown;
+
+                // Remove the event handlers
+                $('body').off('mousemove.jTimeout');
             }
         };
 
