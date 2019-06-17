@@ -246,8 +246,8 @@
                     timeout.hideCountdownAlert();
                 }
             },
-            /* When you are all done, destroy all the timers -- or just let the user navigate away from the page. */
-            destructor: function () {
+            /* Kill the plugin by removing all event handlers and current activities (like flashing) */
+            destroy: function () {
                 timeout.stopFlashing();
                 timeout.stopActivityMonitoring();
                 delete timeout.options.onSessionExtended;
