@@ -1,7 +1,7 @@
 /*
  *
  *
- jTimeout v3.0.1
+ jTimeout v3.2.0
  Made with love by HTMLGuy, LLC
  MIT Licensed
  *
