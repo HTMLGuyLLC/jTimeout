@@ -1,7 +1,7 @@
 /*
  *
  *
- jTimeout v3
+ jTimeout v3.0.1
  Made with love by HTMLGuy, LLC
  MIT Licensed
  *
@@ -20,8 +20,6 @@
 
         var timeout =
         {
-            //key used to store expiration in localstorage
-            expiration_key: 'jtimeout-session-expiration',
             //Whether or not the session has timed out
             timedOut: false,
             //whether or not to warn the person before the session expires
@@ -45,14 +43,14 @@
             //gets the expiration date
             getExpiration: function()
             {
-                return this.get(this.expiration_key);
+                return this.get(this.options.expiration_key);
             },
             //sets the expiration date based on relative seconds
             setExpiration: function(seconds_till_expiration)
             {
                 var d = new Date();
                 d.setSeconds(d.getSeconds() + seconds_till_expiration);
-                return this.set(this.expiration_key, d);
+                return this.set(this.options.expiration_key, d);
             },
             //sets the expiration based on the provided session duration
             resetExpiration: function()
@@ -278,6 +276,7 @@
     };
 
     $.jTimeout.defaults = {
+        expiration_key: 'jtimeout-session-expiration', //key used to store expiration in localstorage (change this for multiple timers)
         flashTitle: true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
         flashTitleSpeed: 500, //how quickly to switch between the original title, and the warning text
         flashingTitleText: '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out

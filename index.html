@@ -16,7 +16,7 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
-    
+
     <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
 	<script src='https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js'></script>
 	<script src='https://htmlguyllc.github.io/jAlert/dist/jAlert.min.js'></script>
@@ -40,19 +40,19 @@
 	  		<a href='#' class='1440Left btn btn-default'>Reset</a>
 	  		<script>
 	  			$(function(){
-		  			
+
 		  			$('.60Left').on('click', function(e){
 			  			e.preventDefault();
 			  			$.jTimeout.reset(60);
 			  			$('#secondsRemaining').val( $.jTimeout().getSecondsTillExpiration() );
 		  			});
-		  			
+
 		  			$('.1440Left').on('click', function(e){
 			  			e.preventDefault();
 			  			$.jTimeout.reset();
 			  			$('#secondsRemaining').val( $.jTimeout().getSecondsTillExpiration() );
 		  			});
-		  			
+
 		  			$('.0Left').on('click', function(e){
 			  			e.preventDefault();
 			  			$.jTimeout.reset(0);
@@ -109,6 +109,7 @@ $(function(){
 $(function(){
    $.jTimeout(
    	{
+        expiration_key: 'jtimeout-session-expiration', //key used to store expiration in localstorage (change this for multiple timers)
 		flashTitle: true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
 		flashTitleSpeed: 500, //how quickly to switch between the original title, and the warning text
 		flashingTitleText: '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out

@@ -3,7 +3,7 @@ by HTMLGuy, LLC (https://htmlguy.com)
 
 ![example jtimeout](https://htmlguyllc.github.io/jTimeout/example.png)
 
-## Demo 
+## Demo
 [https://htmlguyllc.github.io/jTimeout/](http://htmlguyllc.github.io/jTimeout/)
 
 ## What is it?
@@ -43,6 +43,8 @@ npm install jtimeout
 ```javascript
 $(function(){
    $.jTimeout({
+		expiration_key: 'jtimeout-session-expiration', //key used to store expiration in localstorage (change this for multiple timers)
+
 		flashTitle: true, //whether or not to flash the tab/title bar when about to timeout, or after timing out
 		flashTitleSpeed: 500, //how quickly to switch between the original title, and the warning text
 		flashingTitleText: '**WARNING**', //what to show in the tab/title bar when about to timeout, or after timing out
@@ -79,13 +81,13 @@ $.jTimeout({ 'timeoutAfter': <?php echo ini_get('session.gc_maxlifetime'); ?> })
 ```
 
 ### How to reset the expiration
-```javascript 
+```javascript
 $.jTimeout().reset();
 ```
 
 ### How to set the timer to a specific number of seconds
-```javascript 
-$.jTimeout().setExpiration(1440); 
+```javascript
+$.jTimeout().setExpiration(1440);
 ```
 
 ### Recommended reset usage
@@ -97,7 +99,7 @@ $(document).ajaxStop(function(){
 //warning: If $.ajax() or $.ajaxSetup() is called with the global option set to false, the .ajaxStop() method will not fire.
 ```
 
-### If you want to use your own modal 
+### If you want to use your own modal
 jTimeout already works out of the box with jAlert, but can fairly easily configured to work with your own custom callbacks. Just override the callbacks like this:
 ```javascript
 $.jTimeout({
