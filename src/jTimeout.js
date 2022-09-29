@@ -133,20 +133,6 @@
             {
                 timeout.priorCountDown = elem;
             },
-            /**
-             * Hides the countdown alert
-             */
-            hideCountdownAlert: function()
-            {
-                timeout.timeoutWarning = false;
-
-                var timeoutAlert = $('#jTimeoutAlert');
-
-                if (timeoutAlert.length > 0)
-                {
-                    timeoutAlert.closeAlert();
-                }
-            },
             setMouseTimeout: function(timeout)
             {
                 this.mouseTimeout = timeout;
@@ -241,7 +227,7 @@
                 {
                     timeout.stopFlashing();
                     timeout.stopPriorCountdown();
-                    timeout.hideCountdownAlert();
+                    timeout.options.hideCountdownAlert();
                 }
             },
             /* Kill the plugin by removing all event handlers and current activities (like flashing) */
@@ -369,6 +355,20 @@
         onSessionExtended: function(timeout)
         {
             $('#jTimedoutAlert').closeAlert();
+        },
+        /**
+         * Hides the countdown alert
+         */
+        hideCountdownAlert: function()
+        {
+            timeout.timeoutWarning = false;
+
+            var timeoutAlert = $('#jTimeoutAlert');
+
+            if (timeoutAlert.length > 0)
+            {
+                timeoutAlert.closeAlert();
+            }
         }
     };
 
